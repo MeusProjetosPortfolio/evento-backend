@@ -1,6 +1,7 @@
 package com.igreja.registro.controller;
 
 import com.igreja.registro.dto.PersonDto;
+import com.igreja.registro.dto.PersonMapper;
 import com.igreja.registro.model.Person;
 import com.igreja.registro.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/person")
@@ -17,26 +19,33 @@ public class PersonController {
     private PersonService personService;
 
     @GetMapping
-    public List<Person> listarTodas() {
-        return personService.listarTodos();
+    public List<PersonDto> listarTodas() {
+        List<Person> pessoas = personService.listarTodos();
+        return pessoas.stream()
+                .map(PersonMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Optional<Person> buscarPorId(@PathVariable Long id) {
-        return personService.buscarId(id);
+    public PersonDto buscarPorId(@PathVariable Long id) {
+        Optional<Person> pessoaExistente = personService.buscarId(id);
+
+        if (pessoaExistente.isPresent()) {
+            return PersonMapper.toDto(pessoaExistente.get());
+        } else {
+            throw new RuntimeException("Pessoa não encontrada com o id : " + id);
+        }
     }
 
     @PostMapping
-    public Person criarPessoa(@RequestBody PersonDto personDto) {
-        Person person = new Person();
-        person.setName(personDto.getName());
-        person.setChurch(personDto.getChurch());
-
-        return personService.salvar(person);
+    public PersonDto criarPessoa(@RequestBody PersonDto personDto) {
+        Person person = PersonMapper.toEntity(personDto);
+        Person pessoaSalva = personService.salvar(person);
+        return PersonMapper.toDto(pessoaSalva);
     }
 
     @PutMapping("/{id}")
-    public Person atualizarDados(@PathVariable Long id, @RequestBody PersonDto personDto) {
+    public PersonDto atualizarDados(@PathVariable Long id, @RequestBody PersonDto personDto) {
         Optional<Person> pessoaExistente = personService.buscarId(id);
 
         if (pessoaExistente.isPresent()) {
@@ -44,7 +53,9 @@ public class PersonController {
             person.setName(personDto.getName());
             person.setChurch(personDto.getChurch());
 
-            return personService.atualizar(person);
+            Person pessoaAtualizada = personService.atualizar(person);
+
+            return PersonMapper.toDto(pessoaAtualizada);
         } else {
             throw new RuntimeException("Pessoa não encontrada com o id " + id);
         }
