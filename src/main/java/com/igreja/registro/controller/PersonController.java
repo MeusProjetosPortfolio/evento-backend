@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/person")
 public class PersonController {
 
@@ -39,7 +40,7 @@ public class PersonController {
 
     @PostMapping
     public PersonDto criarPessoa(@RequestBody PersonDto personDto) {
-        Person person = PersonMapper.toEntity(personDto);
+        Person person = PersonMapper.toEntity(personDto);   
         Person pessoaSalva = personService.salvar(person);
         return PersonMapper.toDto(pessoaSalva);
     }
