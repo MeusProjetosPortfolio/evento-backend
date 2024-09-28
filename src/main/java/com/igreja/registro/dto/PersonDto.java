@@ -7,4 +7,5 @@ public class PersonDto {
 
     private String name;
     private String church;
+    private String cellphone;
 }

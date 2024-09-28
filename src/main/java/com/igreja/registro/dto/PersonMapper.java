@@ -7,6 +7,7 @@ public class PersonMapper {
         PersonDto dto = new PersonDto();
         dto.setName(person.getName());
         dto.setChurch(person.getChurch());
+        dto.setCellphone(person.getCellphone());
         return dto;
     }
 
@@ -14,6 +15,7 @@ public class PersonMapper {
         Person person = new Person();
         person.setName(dto.getName());
         person.setChurch(dto.getChurch());
+        person.setCellphone(dto.getCellphone());
         return person;
     }
 }

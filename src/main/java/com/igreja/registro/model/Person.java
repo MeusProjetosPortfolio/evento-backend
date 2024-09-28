@@ -22,5 +22,7 @@ public class Person {
 
     private String church;
 
+    private String cellphone;
+
 
 }

@@ -53,6 +53,7 @@ public class PersonController {
             Person person = pessoaExistente.get();
             person.setName(personDto.getName());
             person.setChurch(personDto.getChurch());
+            person.setCellphone(personDto.getCellphone());
 
             Person pessoaAtualizada = personService.atualizar(person);
 
