@@ -3,10 +3,17 @@ package com.igreja.registro.controller;
 import com.igreja.registro.dto.PersonDto;
 import com.igreja.registro.dto.PersonMapper;
 import com.igreja.registro.model.Person;
+import com.igreja.registro.service.PdfService;
 import com.igreja.registro.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,6 +25,22 @@ public class PersonController {
 
     @Autowired
     private PersonService personService;
+
+    @Autowired
+    private PdfService pdfService;
+
+    @GetMapping("/relatorio-pdf")
+    public ResponseEntity<InputStreamResource> gerarRelatorioPdf(){
+        ByteArrayInputStream bis = pdfService.gerarRelatorioPdf();
+
+        var headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=relatorio-participantes.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+    }
 
     @GetMapping
     public List<PersonDto> listarTodas() {
