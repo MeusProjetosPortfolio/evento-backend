@@ -2,6 +2,7 @@ package com.igreja.registro.controller;
 
 import com.igreja.registro.dto.PersonDto;
 import com.igreja.registro.dto.PersonMapper;
+import com.igreja.registro.exception.EntityNotFoundException;
 import com.igreja.registro.model.Person;
 import com.igreja.registro.service.PdfService;
 import com.igreja.registro.service.PersonService;
@@ -52,6 +53,7 @@ public class PersonController {
 
     @GetMapping("/{id}")
     public PersonDto buscarPorId(@PathVariable Long id) {
+        /*
         Optional<Person> pessoaExistente = personService.buscarId(id);
 
         if (pessoaExistente.isPresent()) {
@@ -59,6 +61,11 @@ public class PersonController {
         } else {
             throw new RuntimeException("Pessoa não encontrada com o id : " + id);
         }
+
+         */
+        return personService.buscarId(id)
+                .map(PersonMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("Pessoa não encontrada com o id " + id));
     }
 
     @PostMapping
@@ -70,6 +77,7 @@ public class PersonController {
 
     @PutMapping("/{id}")
     public PersonDto atualizarDados(@PathVariable Long id, @RequestBody PersonDto personDto) {
+        /*
         Optional<Person> pessoaExistente = personService.buscarId(id);
 
         if (pessoaExistente.isPresent()) {
@@ -84,6 +92,16 @@ public class PersonController {
         } else {
             throw new RuntimeException("Pessoa não encontrada com o id " + id);
         }
+
+         */
+        if (!personService.buscarId(id).isPresent()) {
+            throw new EntityNotFoundException("Pessoa não encontrada com o id " + id);
+        }
+
+        Person person = PersonMapper.toEntity(personDto);
+        person.setId(id);
+        Person personAtualizada = personService.atualizar(person);
+        return PersonMapper.toDto(personAtualizada);
     }
 
     @DeleteMapping("/{id}")
